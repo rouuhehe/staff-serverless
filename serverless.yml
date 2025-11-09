@@ -1,0 +1,71 @@
+org: yaritzalopez
+service: staff-serverless
+
+provider:
+  name: aws
+  runtime: python3.13
+  memorySize: 1024
+  timeout: 30
+  iam:
+    role: arn:aws:iam::635391287019:role/LabRole
+  environment:
+    TABLE_NAME: ${sls:stage}-t_staff
+
+functions:
+  createStaff:
+    handler: createStaff.lambda_handler
+    events:
+      - http:
+          path: /staff/{tenant_id}/new/members
+          method: post
+          cors: true
+
+  getStaff:
+    handler: getStaff.lambda_handler
+    events:
+      - http:
+          path: /staff/{tenant_id}/members/{staff_id}
+          method: get
+          cors: true
+
+  updateStaff:
+    handler: updateStaff.lambda_handler
+    events:
+      - http:
+          path: /staff/{tenant_id}/members/{staff_id}
+          method: put
+          cors: true
+
+  deleteStaff:
+    handler: deleteStaff.lambda_handler
+    events:
+      - http:
+          path: /staff/{tenant_id}/members/{staff_id}/delete
+          method: post
+          cors: true
+  
+  listStaff:
+    handler: listStaff.lambda_handler
+    events:
+      - http:
+          path: /staff/{tenant_id}/all/members
+          method: get
+          cors: true
+
+resources:
+  Resources:
+    TablaStaff:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: staff_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tenant_id
+            KeyType: HASH
+          - AttributeName: staff_id
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
