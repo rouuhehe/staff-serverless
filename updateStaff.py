@@ -1,4 +1,5 @@
 import json, boto3
+import os
 from time import time
 from botocore.exceptions import ClientError
 
@@ -6,6 +7,7 @@ def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
     tenant_id = event["pathParameters"]["tenant_id"]
     staff_id = event["pathParameters"]["staff_id"]
+    table_name = os.environ["TABLE_NAME"]
     now = str(int(time()))
 
     allowed = {"name", "role", "email"}
@@ -17,7 +19,7 @@ def lambda_handler(event, context):
     values = {f":{k}": v for k, v in update_fields.items()}
     values[":u"] = now
 
-    table = boto3.resource("dynamodb").Table("t_staff")
+    table = boto3.resource("dynamodb").Table(table_name)
 
     try:
         res = table.update_item(

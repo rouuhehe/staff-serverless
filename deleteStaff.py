@@ -1,12 +1,13 @@
 import json
+import os
 import boto3
 from botocore.exceptions import ClientError
 from time import time
 
 def lambda_handler(event, context):
     dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table("t_staff")
-
+    table_name = os.environ["TABLE_NAME"]
+    table = dynamodb.Table(table_name)
     tenant_id = event["pathParameters"]["tenant_id"]
     staff_id = event["pathParameters"]["staff_id"]
     now = str(int(time()))

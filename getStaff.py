@@ -1,13 +1,15 @@
 import json
+import os
 import boto3
 def lambda_handler(event, context):
         body = json.loads(event['body'])
+        table_name = os.environ["TABLE_NAME"]
          
         staff_id = body['staff_id']
         tenant_id = body['tenant_id']
 
         dynamodb = boto3.resource('dynamodb')
-        table = dynamodb.Table('t_staff')
+        table = dynamodb.Table(table_name)
 
         response = table.get_item(
                 Key = {
