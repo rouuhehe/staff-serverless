@@ -2,7 +2,7 @@ import boto3, json
 
 def lambda_handler(event, context):
     tenant_id = event["pathParameters"]["tenant_id"]
-    table = boto3.resource("dynamodb").Table("t_staff")
+    table = boto3.resource("dynamodb").Table("dev-t_staff")
 
     res = table.query(
         KeyConditionExpression="tenant_id = :t",

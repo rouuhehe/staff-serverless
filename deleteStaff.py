@@ -5,7 +5,7 @@ from time import time
 
 def lambda_handler(event, context):
     dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table("t_staff")
+    table = dynamodb.Table("dev-t_staff")
 
     tenant_id = event["pathParameters"]["tenant_id"]
     staff_id = event["pathParameters"]["staff_id"]

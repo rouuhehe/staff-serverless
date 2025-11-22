@@ -9,7 +9,7 @@ def lambda_handler(event, context):
     now = str(int(time()))
 
     dynamodb = boto3.resource("dynamodb")
-    table = dynamodb.Table("t_staff")
+    table = dynamodb.Table("dev-t_staff")
 
     staff_data = {
         "tenant_id": tenant_id,

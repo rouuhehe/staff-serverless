@@ -13,21 +13,27 @@ def lambda_handler(event, context):
     if not update_fields:
         return {"statusCode": 400, "body": json.dumps({"error": "no valid fields"})}
 
-    expr = "SET " + ", ".join([f"{k} = :{k}" for k in update_fields]) + ", updatedAt = :u"
-    values = {f":{k}": v for k, v in update_fields.items()}
+    # Mapeamos atributos reservados
+    attr_names = {f"#{k}": k for k in update_fields.keys()}
+
+    expr = "SET " + ", ".join([f"#{k} = :{k}" for k in update_fields]) + ", updatedAt = :u"
+    
+    values = {f":{k}": v for k,v in update_fields.items()}
     values[":u"] = now
 
-    table = boto3.resource("dynamodb").Table("t_staff")
+    table = boto3.resource("dynamodb").Table("dev-t_staff")
 
     try:
         res = table.update_item(
             Key={"tenant_id": tenant_id, "staff_id": staff_id},
             UpdateExpression=expr,
             ExpressionAttributeValues=values,
+            ExpressionAttributeNames=attr_names,
             ConditionExpression="attribute_exists(staff_id)",
-            ReturnValues="ALL_NEW",
+            ReturnValues="ALL_NEW"
         )
         return {"statusCode": 200, "body": json.dumps(res["Attributes"])}
+    
     except ClientError as e:
         if e.response["Error"]["Code"] == "ConditionalCheckFailedException":
             return {"statusCode": 404, "body": json.dumps({"error": "staff not found"})}
