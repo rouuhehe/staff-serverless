@@ -10,6 +10,22 @@ provider:
     role: arn:aws:iam::157918330129:role/LabRole
   environment:
     TABLE_NAME: ${sls:stage}-t_staff
+    JWT_SECRET: eso_tilin_1234
+    
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"           
+      allowedHeaders:
+        - "*"
+      allowedMethods:
+        - GET
+        - POST
+        - PATCH
+        - PUT
+        - DELETE
+        - OPTIONS
+
 
 functions:
   createStaff:
