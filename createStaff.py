@@ -49,7 +49,6 @@ def lambda_handler(event, context):
     body = json.loads(event.get("body", "{}"))
     tenant_id = event["pathParameters"]["tenant_id"]
 
-    staff_id = str(uuid.uuid4())
     now = str(int(time()))
 
     dynamodb = boto3.resource("dynamodb")
@@ -57,9 +56,8 @@ def lambda_handler(event, context):
 
     staff_data = {
         "tenant_id": tenant_id,
-        "staff_id": staff_id,
+        "staff_id": body["email"].lower(),
         "name": body["name"],
-        "email": body["email"].lower(),
         "role": body["role"], # manager, repartidor, cocinero, despachador
         "isActive": True,
         "createdAt": now,
@@ -70,7 +68,7 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 201,
-        "body": json.dumps({"message": "Staff created", "staff_id": staff_id}),
+        "body": json.dumps({"message": "Staff created", "staff_id": body["email"].lower()}),
     }
 
 
